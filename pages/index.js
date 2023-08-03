@@ -16,12 +16,18 @@ export default function Index() {
     }
   };
 
-  // Fetch data when the component mounts
+  // Fetch data when the component mounts and then every second
   useEffect(() => {
-    fetchData();
+    fetchData(); // Fetch data immediately on mount
+    const interval = setInterval(fetchData, 1000); // Fetch data every 1000ms (1 second)
+
+    // Clean up the interval on component unmount
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
-  const getParkingColor = (status) => (status ? "bg-red-500" : "bg-green-500");
+  const getParkingColor = (status) => (status ? "bg-green-500" : "bg-red-500");
   // Count the number of parkings with status true
   const availableParkings = Object.values(parkingStatus).filter(
     (status) => status
@@ -45,28 +51,28 @@ export default function Index() {
             <tr>
               <td
                 className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking-1"]
+                  parkingStatus["parking1"]
                 )}`}
               >
                 Parking 1
               </td>
               <td
                 className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking-2"]
+                  parkingStatus["parking2"]
                 )}`}
               >
                 Parking 2
               </td>
               <td
                 className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking-3"]
+                  parkingStatus["parking3"]
                 )}`}
               >
                 Parking 3
               </td>
               <td
                 className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking-4"]
+                  parkingStatus["parking4"]
                 )}`}
               >
                 Parking 4
