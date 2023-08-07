@@ -29,11 +29,9 @@ export default async function handler(req, res) {
     case "PUT":
       try {
         const { collectionName, status } = req.body;
-
         // Fetch the existing data from the "parking status" document
         const parkingStatusRef = doc(db, "parking", "parking status");
         const parkingStatusDoc = await getDoc(parkingStatusRef);
-
         if (!parkingStatusDoc.exists()) {
           res
             .status(404)
