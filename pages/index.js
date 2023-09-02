@@ -43,49 +43,51 @@ function Index() {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen flex-col">
-      {loading ? ( // Render skeleton loading if data is not ready
-        <div className="animate-pulse">
-          <div className="bg-gray-300 h-6 w-40 mb-4" />
-          <table>
-            <tbody>
-              <tr>
-                <td className="border-4 px-4 py-6 bg-gray-300">Loading...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <>
-          <table>
-            <tbody>
-              <tr>
-                <td className="border-4 px-4 py-6">
-                  Parkir Tersedia: {getAvailableParkings().length}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="my-4" />
-          <table>
-            <tbody>
-              <tr>
-                {Object.entries(distances).map(([distanceName, distanceValue]) => (
-                  <td
-                    key={distanceName}
-                    className={`border-4 px-8 py-24 ${getParkingColor(
-                      distanceValue
-                    )}`}
-                  >
-                    {distanceName}
+        {loading ? ( // Render skeleton loading if data is not ready
+          <div className="animate-pulse">
+            <div className="bg-gray-300 h-6 w-40 mb-4" />
+            <table>
+              <tbody>
+                <tr>
+                  <td className="border-4 px-4 py-6 bg-gray-300">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <>
+            <table>
+              <tbody>
+                <tr>
+                  <td className="border-4 px-4 py-6">
+                    Parkir Tersedia: {getAvailableParkings().length}
                   </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </>
-      )}
-    </div>
-  );
+                </tr>
+              </tbody>
+            </table>
+            <div className="my-4" />
+            <table>
+              <tbody>
+                <tr>
+                  {Object.entries(distances).map(
+                    ([distanceName, distanceValue]) => (
+                      <td
+                        key={distanceName}
+                        className={`border-4 px-8 py-24 ${getParkingColor(
+                          distanceValue
+                        )}`}
+                      >
+                        {distanceName}
+                      </td>
+                    )
+                  )}
+                </tr>
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
+      );
     </>
   );
 }
