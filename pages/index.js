@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 const database = getDatabase(firebase_app);
 function Index() {
   const [distances, setDistances] = useState({});
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     // Create a reference to the "Distances" map
     const distancesRef = ref(database, "Distances");
@@ -18,6 +19,7 @@ function Index() {
         setDistances({});
       }
     });
+    setLoading(false);
     // Clean up the listener when the component unmounts
     return () => {
       unsubscribe(); // Unsubscribe to prevent memory leaks
@@ -35,27 +37,39 @@ function Index() {
     const availableParkings = Object.entries(distances).filter(
       ([_, distanceValue]) => distanceValue < 10
     );
-
     return availableParkings.map(([distanceName]) => distanceName);
   };
+  console.log(getAvailableParkings().length);
   return (
     <>
       <div className="flex justify-center items-center min-h-screen flex-col">
-        <table>
-          <tbody>
-            <tr>
-              <td className="border-4 px-4 py-6">
-                Parkir Tersedia: {getAvailableParkings().length}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="my-4" />
-        <table>
-          <tbody>
-            <tr>
-              {Object.entries(distances).map(
-                ([distanceName, distanceValue]) => (
+      {loading ? ( // Render skeleton loading if data is not ready
+        <div className="animate-pulse">
+          <div className="bg-gray-300 h-6 w-40 mb-4" />
+          <table>
+            <tbody>
+              <tr>
+                <td className="border-4 px-4 py-6 bg-gray-300">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          <table>
+            <tbody>
+              <tr>
+                <td className="border-4 px-4 py-6">
+                  Parkir Tersedia: {getAvailableParkings().length}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="my-4" />
+          <table>
+            <tbody>
+              <tr>
+                {Object.entries(distances).map(([distanceName, distanceValue]) => (
                   <td
                     key={distanceName}
                     className={`border-4 px-8 py-24 ${getParkingColor(
@@ -64,12 +78,14 @@ function Index() {
                   >
                     {distanceName}
                   </td>
-                )
-              )}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </>
+      )}
+    </div>
+  );
     </>
   );
 }
