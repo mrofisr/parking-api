@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 const database = getDatabase(firebase_app);
 function Index() {
   const [distances, setDistances] = useState({});
-  const [parkingStatus, setParkingStatus] = useState({});
-  const [availableParkings, setAvailableParkings] = useState(0);
   useEffect(() => {
     // Create a reference to the "Distances" map
     const distancesRef = ref(database, "Distances");
