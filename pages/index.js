@@ -1,38 +1,45 @@
+// Import the functions you need from the SDKs you need
+import firebase_app from "@/src/firebase/config";
+import { getDatabase, ref, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
-
-export default function Index() {
-  const [parkingStatus, setParkingStatus] = useState([]);
-
-  // Function to fetch data from the API (GET request)
-  const fetchData = async () => {
-    try {
-      const response = await fetch("/api/parking-status", {
-        method: "GET",
-      });
-      const data = await response.json();
-      setParkingStatus(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  // Fetch data when the component mounts and then every second
+// Get a reference to the database
+const database = getDatabase(firebase_app);
+function Index() {
+  const [distances, setDistances] = useState({});
+  const [parkingStatus, setParkingStatus] = useState({});
+  const [availableParkings, setAvailableParkings] = useState(0);
   useEffect(() => {
-    fetchData(); // Fetch data immediately on mount
-    const interval = setInterval(fetchData, 1000); // Fetch data every 1000ms (1 second)
-
-    // Clean up the interval on component unmount
+    // Create a reference to the "Distances" map
+    const distancesRef = ref(database, "Distances");
+    // Set up a listener for changes to the "Distances" map
+    const unsubscribe = onValue(distancesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const distancesData = snapshot.val();
+        setDistances(distancesData);
+      } else {
+        setDistances({});
+      }
+    });
+    // Clean up the listener when the component unmounts
     return () => {
-      clearInterval(interval);
+      unsubscribe(); // Unsubscribe to prevent memory leaks
     };
-  }, []);
+  }, []); // The empty dependency array means this effect runs once on component mount
+  const getParkingColor = (distanceValue) => {
+    // Check if the distance is less than 10
+    if (distanceValue < 10) {
+      return "bg-green-500"; // Green background for available parking
+    } else {
+      return "bg-red-500"; // Red background for unavailable parking
+    }
+  }; // Count the number of parkings with status tru
+  const getAvailableParkings = () => {
+    const availableParkings = Object.entries(distances).filter(
+      ([_, distanceValue]) => distanceValue < 10
+    );
 
-  const getParkingColor = (status) => (status ? "bg-green-500" : "bg-red-500");
-  // Count the number of parkings with status true
-  const availableParkings = Object.values(parkingStatus).filter(
-    (status) => status
-  ).length;
-
+    return availableParkings.map(([distanceName]) => distanceName);
+  };
   return (
     <>
       <div className="flex justify-center items-center min-h-screen flex-col">
@@ -40,7 +47,7 @@ export default function Index() {
           <tbody>
             <tr>
               <td className="border-4 px-4 py-6">
-                Parkir Tersedia: {availableParkings}
+                Parkir Tersedia: {getAvailableParkings().length}
               </td>
             </tr>
           </tbody>
@@ -49,34 +56,18 @@ export default function Index() {
         <table>
           <tbody>
             <tr>
-              <td
-                className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking1"]
-                )}`}
-              >
-                Parking 1
-              </td>
-              <td
-                className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking2"]
-                )}`}
-              >
-                Parking 2
-              </td>
-              <td
-                className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking3"]
-                )}`}
-              >
-                Parking 3
-              </td>
-              <td
-                className={`border-4 px-8 py-24 ${getParkingColor(
-                  parkingStatus["parking4"]
-                )}`}
-              >
-                Parking 4
-              </td>
+              {Object.entries(distances).map(
+                ([distanceName, distanceValue]) => (
+                  <td
+                    key={distanceName}
+                    className={`border-4 px-8 py-24 ${getParkingColor(
+                      distanceValue
+                    )}`}
+                  >
+                    {distanceName}
+                  </td>
+                )
+              )}
             </tr>
           </tbody>
         </table>
@@ -84,3 +75,5 @@ export default function Index() {
     </>
   );
 }
+
+export default Index;
