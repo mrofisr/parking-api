@@ -28,9 +28,9 @@ function Index() {
   const getParkingColor = (distanceValue) => {
     // Check if the distance is less than 10
     if (distanceValue < 10) {
-      return "bg-green-500"; // Green background for available parking
+      return "bg-red-500"; // Green background for available parking
     } else {
-      return "bg-red-500"; // Red background for unavailable parking
+      return "bg-green-500"; // Red background for unavailable parking
     }
   }; // Count the number of parkings with status tru
   const getAvailableParkings = () => {
