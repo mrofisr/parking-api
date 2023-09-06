@@ -35,11 +35,10 @@ function Index() {
   }; // Count the number of parkings with status tru
   const getAvailableParkings = () => {
     const availableParkings = Object.entries(distances).filter(
-      ([_, distanceValue]) => distanceValue < 10
+      ([_, distanceValue]) => distanceValue > 10
     );
     return availableParkings.map(([distanceName]) => distanceName);
   };
-  console.log(getAvailableParkings().length);
   return (
     <>
       <div className="flex justify-center items-center min-h-screen flex-col">
